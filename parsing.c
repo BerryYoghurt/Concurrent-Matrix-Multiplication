@@ -1,8 +1,8 @@
 #include "parsing.h"
 
 /*parses the two files with the provided names and allocates memory*/
-int parse_input(const char *name, int *rows_ptr, int *cols_ptr, int ***mat_ptr){
-    int err = 0, n_rows, n_cols, **mat, i, j;
+int parse_input(const char *name, int *rows_ptr, int *cols_ptr, int (**mat_ptr)[]){
+    int err = 0, n_rows, n_cols, i, j;
     char line[MAX_BUF], *str_err, *token; //str error is the error from parsing a line
     FILE *file = fopen(name, "r");
     if(file == NULL){
@@ -22,11 +22,8 @@ int parse_input(const char *name, int *rows_ptr, int *cols_ptr, int ***mat_ptr){
             n_rows = *rows_ptr;
             n_cols = *cols_ptr;
 
-            *mat_ptr = (int**)malloc(n_rows * sizeof(int*));
-            for(i = 0; i < n_rows; i++){
-                (*mat_ptr)[i] = (int*)malloc(n_cols * sizeof(int));
-            }
-            mat = *mat_ptr;
+            *mat_ptr = (int (*)[])malloc(sizeof(int[n_rows][n_cols]));
+            int (*mat)[n_cols] = *mat_ptr;
 
             for (i = 0; i < n_rows && err == 0; i++) {
                 str_err = fgets(line, MAX_BUF,file);
@@ -52,5 +49,12 @@ int parse_input(const char *name, int *rows_ptr, int *cols_ptr, int ***mat_ptr){
     }
 
     fclose(file);
+    return err;
+}
+
+_Bool handle_input_error(int err, const char* name){
+    if(err){
+        printf("Error %d in %s matrix\n", err, name);
+    }
     return err;
 }

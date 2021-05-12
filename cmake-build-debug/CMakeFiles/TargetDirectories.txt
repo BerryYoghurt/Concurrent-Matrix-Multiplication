@@ -1,3 +1,0 @@
-/home/jehad/CLionProjects/MatMult/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/jehad/CLionProjects/MatMult/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/jehad/CLionProjects/MatMult/cmake-build-debug/CMakeFiles/MatMult.dir

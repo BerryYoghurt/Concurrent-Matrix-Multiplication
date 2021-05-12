@@ -169,6 +169,33 @@ main.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MatMult.dir/build.make CMakeFiles/MatMult.dir/main.c.s
 .PHONY : main.c.s
 
+multiplication.o: multiplication.c.o
+
+.PHONY : multiplication.o
+
+# target to build an object file
+multiplication.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MatMult.dir/build.make CMakeFiles/MatMult.dir/multiplication.c.o
+.PHONY : multiplication.c.o
+
+multiplication.i: multiplication.c.i
+
+.PHONY : multiplication.i
+
+# target to preprocess a source file
+multiplication.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MatMult.dir/build.make CMakeFiles/MatMult.dir/multiplication.c.i
+.PHONY : multiplication.c.i
+
+multiplication.s: multiplication.c.s
+
+.PHONY : multiplication.s
+
+# target to generate assembly for a file
+multiplication.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MatMult.dir/build.make CMakeFiles/MatMult.dir/multiplication.c.s
+.PHONY : multiplication.c.s
+
 parsing.o: parsing.c.o
 
 .PHONY : parsing.o
@@ -208,6 +235,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... multiplication.o"
+	@echo "... multiplication.i"
+	@echo "... multiplication.s"
 	@echo "... parsing.o"
 	@echo "... parsing.i"
 	@echo "... parsing.s"

@@ -14,7 +14,8 @@
 #define NO_DIMENSIONS 102
 #define IO_ERROR 103
 
-int parse_input(const char*, int*, int*, int***);
+int parse_input(const char*, int*, int*, int (**)[]);
+_Bool handle_input_error(int, const char*);
 
 #endif //MATMULT_PARSING_H
 

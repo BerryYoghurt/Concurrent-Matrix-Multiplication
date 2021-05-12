@@ -79,6 +79,12 @@
 		<Unit filename="/home/jehad/CLionProjects/MatMult/main.c">
 			<Option target="MatMult"/>
 		</Unit>
+		<Unit filename="/home/jehad/CLionProjects/MatMult/multiplication.c">
+			<Option target="MatMult"/>
+		</Unit>
+		<Unit filename="/home/jehad/CLionProjects/MatMult/multiplication.h">
+			<Option target="MatMult"/>
+		</Unit>
 		<Unit filename="/home/jehad/CLionProjects/MatMult/parsing.c">
 			<Option target="MatMult"/>
 		</Unit>
