@@ -58,15 +58,14 @@ int main(int argc,char *argv[]){
             c = (int (*)[])malloc(sizeof(int[rows_a][cols_b]));
 
             fprintf(c_file,"Method 1:\n");
-            fprintf(stdout,"Method 1:\n");
             gettimeofday(&start, NULL);
             //Multiplication Logic
             thread_per_mat();
 
             gettimeofday(&stop, NULL);
             print_mat(c_file, rows_a, cols_b, c);
-            fprintf(stdout, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
-            fprintf(stdout, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
+            fprintf(c_file, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
+            fprintf(c_file, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
 
             memset(c, 0, rows_a*cols_b*sizeof(int)); // to make sure it works
 
@@ -76,7 +75,6 @@ int main(int argc,char *argv[]){
             print_mat(stdout,rows_b, cols_b, b);*/
 
             fprintf(c_file, "Method 2:\n");
-            fprintf(stdout,"Method 2:\n");
             pthread_t threads[rows_a];
             gettimeofday(&start, NULL);
             //Multiplication logic
@@ -91,13 +89,12 @@ int main(int argc,char *argv[]){
 
             gettimeofday(&stop, NULL);
             print_mat(c_file, rows_a, cols_b, c);
-            fprintf(stdout, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
-            fprintf(stdout, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
+            fprintf(c_file, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
+            fprintf(c_file, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
 
             memset(c, 0, rows_a*cols_b*sizeof(int)); // to make sure it works
 
             fprintf(c_file, "Method 3\n");
-            fprintf(stdout,"Method 3:\n");
             pthread_t threads_mat[rows_a][cols_b];
             element_info (*inf)[rows_a][cols_b] = malloc(sizeof(element_info[rows_a][cols_b]));//this saves
             //some memory in comparison with allocating each single element
@@ -125,8 +122,8 @@ int main(int argc,char *argv[]){
 
             free(inf);
             print_mat(c_file, rows_a, cols_b, c);
-            fprintf(stdout, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
-            fprintf(stdout, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
+            fprintf(c_file, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
+            fprintf(c_file, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
         }
     }
 
@@ -178,6 +175,7 @@ void *thread_per_mat(){
 
 void *thread_per_row(void *row_index){
     int res, idx = (int)row_index, (*mat_a)[cols_a], (*mat_b)[cols_b], (*mat_ans)[cols_b];
+    printf("in row %d\n", idx);
 
     mat_a = a;
     mat_b = b;

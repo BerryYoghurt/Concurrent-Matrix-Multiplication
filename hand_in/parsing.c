@@ -54,6 +54,9 @@ int parse_input(const char *name, int *rows_ptr, int *cols_ptr, int (**mat_ptr)[
 }
 
 _Bool handle_input_error(int err, const char* name){
+    if(err){
+        printf("Error %d in %s matrix\n", err, name);
+    }
     switch(err){
         case IO_ERROR:
             printf("IO_ERROR occured in %s matrix. Are you sure the file is in the "

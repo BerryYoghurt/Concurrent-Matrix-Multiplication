@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/MatMult.dir/main.c.o CMakeFiles/MatMult.dir/parsing.c.o -o MatMult  -pthread 
