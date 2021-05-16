@@ -4,9 +4,11 @@
 #include <pthread.h>
 #include <sys/time.h>
 #include "parsing.h"
-
+//a,b,c: each of them is a pointer to a 1D array (with unknown size because it is declared globally
+// before any input)
 int (*a)[] = NULL, (*b)[] = NULL, (*c)[] = NULL, rows_a, cols_a, rows_b, cols_b;
 
+//struct to store the row, col index (used when multiplying each element on its own)
 typedef struct element_info{
     int row;
     int col;
@@ -29,7 +31,7 @@ void print_mat(FILE *, int r, int c, int[r][c]);
 int main(int argc,char *argv[]){
     FILE*c_file = NULL;
     int err[2];
-    char *a_name = "a.txt", *b_name = "b.txt", *c_name = "c.txt";
+    char *a_name = "a.txt", *b_name = "b.txt", *c_name = "c.txt"; //default names
     struct timeval start, stop;
 
     if(argc == 4){
@@ -41,20 +43,17 @@ int main(int argc,char *argv[]){
         exit(1);
     }
 
-    err[0] = parse_input(a_name, &rows_a, &cols_a, &a);
+    err[0] = parse_input(a_name, &rows_a, &cols_a, &a); //fill matrices and report any errors
     err[1] = parse_input(b_name, &rows_b, &cols_b, &b);
 
+    //handle possible errors
     if(!handle_input_error(err[0], "first") && !handle_input_error(err[1], "second")){
 
         if(cols_a != rows_b){
             printf("The number of columns of the first matrix does not match that of the second\n");
         }else{
-            /*printf("Matrix A\n");
-        print_mat(stdout, rows_a, cols_a, a);
-        printf("Matrix B\n");
-        print_mat(stdout,rows_b, cols_b, b);*/
-
             c_file = fopen(c_name,"w");
+            //allocate enough memory to store *rows_a* 1D arrays of size cols_b
             c = (int (*)[])malloc(sizeof(int[rows_a][cols_b]));
 
             fprintf(c_file,"Method 1:\n");
@@ -65,18 +64,15 @@ int main(int argc,char *argv[]){
 
             gettimeofday(&stop, NULL);
             print_mat(c_file, rows_a, cols_b, c);
+            fprintf(stdout, "threads created: Only Main thread\n");
             fprintf(stdout, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
             fprintf(stdout, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
 
-            memset(c, 0, rows_a*cols_b*sizeof(int)); // to make sure it works
-
-            /*printf("Matrix A\n");
-            print_mat(stdout, rows_a, cols_a, a);
-            printf("Matrix B\n");
-            print_mat(stdout,rows_b, cols_b, b);*/
+            memset(c, 0, rows_a*cols_b*sizeof(int)); // clear matrix
 
             fprintf(c_file, "Method 2:\n");
             fprintf(stdout,"Method 2:\n");
+
             pthread_t threads[rows_a];
             gettimeofday(&start, NULL);
             //Multiplication logic
@@ -85,16 +81,17 @@ int main(int argc,char *argv[]){
                     printf("Error creating thread\n");
                 }
             }
-            for(int i = 0; i < rows_a; i++){
+            for(int i = 0; i < rows_a; i++){//wait till all threads finish
                 pthread_join(threads[i], NULL);
             }
 
             gettimeofday(&stop, NULL);
             print_mat(c_file, rows_a, cols_b, c);
+            fprintf(stdout, "threads created: %d\n",rows_a);
             fprintf(stdout, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
             fprintf(stdout, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
 
-            memset(c, 0, rows_a*cols_b*sizeof(int)); // to make sure it works
+            memset(c, 0, rows_a*cols_b*sizeof(int)); // clear matrix
 
             fprintf(c_file, "Method 3\n");
             fprintf(stdout,"Method 3:\n");
@@ -105,9 +102,6 @@ int main(int argc,char *argv[]){
             //Multiplication Logic
             for(int i = 0; i < rows_a; i++){
                 for(int j = 0; j < cols_b; j++){
-                    /*element_info *inf = malloc(sizeof(element_info));
-                    inf->row = i;
-                    inf->col = j;*/
                     (*inf)[i][j].row = i;
                     (*inf)[i][j].col = j;
                     if(pthread_create(&threads_mat[i][j], NULL, thread_per_elem, &(*inf)[i][j])){
@@ -125,16 +119,11 @@ int main(int argc,char *argv[]){
 
             free(inf);
             print_mat(c_file, rows_a, cols_b, c);
+            fprintf(stdout, "threads created: %d\n",rows_a*cols_b);
             fprintf(stdout, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
             fprintf(stdout, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
         }
     }
-
-
-    /*printf("Matrix A\n");
-    print_mat(a, rows_a, cols_a);
-    printf("Matrix B\n");
-    print_mat(b, rows_b, cols_b);*/
 
 
     if(a != NULL)
@@ -152,7 +141,7 @@ int main(int argc,char *argv[]){
 void print_mat(FILE* file, int rows, int cols, int mat[rows][cols]){
     for(int i = 0; i < rows; i++){
         for(int j = 0; j < cols; j++){
-            fprintf(file, "%7d\t",mat[i][j]);
+            fprintf(file, "%7d\t",mat[i][j]);//pretty print
         }
         fprintf(file,"\n");
     }
@@ -160,6 +149,9 @@ void print_mat(FILE* file, int rows, int cols, int mat[rows][cols]){
 
 
 void *thread_per_mat(){
+    //normal sequential matrix multiplication
+    //cast each matrix (a, b or c) to pointer to 1D array of KNOWN size
+    //so that it can be accessed normally
     int res, (*mat_a)[cols_a], (*mat_b)[cols_b], (*mat_ans)[cols_b];
     mat_a = a;
     mat_b = b;
@@ -177,6 +169,7 @@ void *thread_per_mat(){
 }
 
 void *thread_per_row(void *row_index){
+    //cast matrices as explained in thread_per_mat
     int res, idx = (int)row_index, (*mat_a)[cols_a], (*mat_b)[cols_b], (*mat_ans)[cols_b];
 
     mat_a = a;
@@ -193,6 +186,7 @@ void *thread_per_row(void *row_index){
 }
 
 void *thread_per_elem(void *info){
+    //cast argument and cast matrices as explained before
     element_info inf = *(element_info*) info;
     int res = 0, (*mat_a)[cols_a], (*mat_b)[cols_b], (*mat_c)[cols_b];
     mat_a = a; mat_b = b; mat_c = c;
@@ -200,6 +194,5 @@ void *thread_per_elem(void *info){
         res += mat_a[inf.row][i] * mat_b[i][inf.col];
     }
     mat_c[inf.row][inf.col] = res;
-    //free(info);
     return NULL;
 }

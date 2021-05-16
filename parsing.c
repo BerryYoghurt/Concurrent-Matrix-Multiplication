@@ -11,8 +11,8 @@ int parse_input(const char *name, int *rows_ptr, int *cols_ptr, int (**mat_ptr)[
     if(str_err == NULL){
         err = IO_ERROR;
     }else{
-        err = sscanf(line," row=%d col=%d ", rows_ptr, cols_ptr);//TODO numeric overflow checkk
-        if(err == EOF) {//TODO check these errors
+        err = sscanf(line," row=%d col=%d ", rows_ptr, cols_ptr);
+        if(err == EOF) {
             err = IO_ERROR;
         }else if(err != 2) {
             err = NO_DIMENSIONS;
@@ -24,7 +24,7 @@ int parse_input(const char *name, int *rows_ptr, int *cols_ptr, int (**mat_ptr)[
             n_cols = *cols_ptr;
 
             *mat_ptr = (int (*)[])malloc(sizeof(int[n_rows][n_cols]));
-            int (*mat)[n_cols] = *mat_ptr;
+            int (*mat)[n_cols] = *mat_ptr;//cast mat_ptr to pointer to 1D array of size n_cols to be able to address it normally
 
             for (i = 0; i < n_rows && err == 0; i++) {
                 str_err = fgets(line, MAX_BUF,file);
