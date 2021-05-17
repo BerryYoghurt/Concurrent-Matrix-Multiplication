@@ -1,4 +1,4 @@
-all: matmult
+all: matMultp
 
 parsing.o: parsing.c parsing.h
 	gcc -c $^ -I.
@@ -6,5 +6,5 @@ parsing.o: parsing.c parsing.h
 main.o: main.c parsing.h
 	gcc -c $^ -I.
 
-matmult: main.o parsing.o
-	gcc -o matmult main.o parsing.o -lpthread
+matMultp: main.o parsing.o
+	gcc -o matMultp main.o parsing.o -lpthread

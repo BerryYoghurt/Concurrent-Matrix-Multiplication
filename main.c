@@ -31,7 +31,7 @@ void print_mat(FILE *, int r, int c, int[r][c]);
 int main(int argc,char *argv[]){
     FILE*c_file = NULL;
     int err[2];
-    char *a_name = "a.txt", *b_name = "b.txt", *c_name = "c.txt"; //default names
+    char *a_name = "a.txt", *b_name = "b.txt", *c_name = "c.out"; //default names
     struct timeval start, stop;
 
     if(argc == 4){
@@ -98,30 +98,34 @@ int main(int argc,char *argv[]){
             pthread_t threads_mat[rows_a][cols_b];
             element_info (*inf)[rows_a][cols_b] = malloc(sizeof(element_info[rows_a][cols_b]));//this saves
             //some memory in comparison with allocating each single element
-            gettimeofday(&start, NULL);
-            //Multiplication Logic
-            for(int i = 0; i < rows_a; i++){
-                for(int j = 0; j < cols_b; j++){
-                    (*inf)[i][j].row = i;
-                    (*inf)[i][j].col = j;
-                    if(pthread_create(&threads_mat[i][j], NULL, thread_per_elem, &(*inf)[i][j])){
-                        printf("Cannot create thread\n");
+            if(inf == NULL){
+                printf("Error allocating memory for info");
+            }else{
+                gettimeofday(&start, NULL);
+                //Multiplication Logic
+                for(int i = 0; i < rows_a; i++){
+                    for(int j = 0; j < cols_b; j++){
+                        (*inf)[i][j].row = i;
+                        (*inf)[i][j].col = j;
+                        if(pthread_create(&threads_mat[i][j], NULL, thread_per_elem, &(*inf)[i][j])){
+                            printf("Cannot create thread\n");
+                        }
                     }
                 }
-            }
 
-            for(int i = 0; i < rows_a; i++){
-                for(int j = 0; j < cols_b; j++){
-                    pthread_join(threads_mat[i][j], NULL);
+                for(int i = 0; i < rows_a; i++){
+                    for(int j = 0; j < cols_b; j++){
+                        pthread_join(threads_mat[i][j], NULL);
+                    }
                 }
-            }
-            gettimeofday(&stop, NULL);
+                gettimeofday(&stop, NULL);
 
-            free(inf);
-            print_mat(c_file, rows_a, cols_b, c);
-            fprintf(stdout, "threads created: %d\n",rows_a*cols_b);
-            fprintf(stdout, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
-            fprintf(stdout, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
+                free(inf);
+                print_mat(c_file, rows_a, cols_b, c);
+                fprintf(stdout, "threads created: %d\n",rows_a*cols_b);
+                fprintf(stdout, "Seconds taken: %lu\n", stop.tv_sec-start.tv_sec);
+                fprintf(stdout, "Microseconds taken: %lu\n", stop.tv_usec-start.tv_usec);
+            }
         }
     }
 

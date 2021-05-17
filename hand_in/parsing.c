@@ -24,26 +24,30 @@ int parse_input(const char *name, int *rows_ptr, int *cols_ptr, int (**mat_ptr)[
             n_cols = *cols_ptr;
 
             *mat_ptr = (int (*)[])malloc(sizeof(int[n_rows][n_cols]));
-            int (*mat)[n_cols] = *mat_ptr;//cast mat_ptr to pointer to 1D array of size n_cols to be able to address it normally
+            if(*mat_ptr == NULL){
+                err = IO_ERROR;
+            }else{
+                int (*mat)[n_cols] = *mat_ptr;//cast mat_ptr to pointer to 1D array of size n_cols to be able to address it normally
 
-            for (i = 0; i < n_rows && err == 0; i++) {
-                str_err = fgets(line, MAX_BUF,file);
-                if(str_err == NULL && !ferror(file)){
-                    err = NOT_ENOUGH_NUMBERS;
-                    break;
-                }else if(ferror(file)){
-                    err = IO_ERROR;
-                    break;
-                }
+                for (i = 0; i < n_rows && err == 0; i++) {
+                    str_err = fgets(line, MAX_BUF,file);
+                    if(str_err == NULL && !ferror(file)){
+                        err = NOT_ENOUGH_NUMBERS;
+                        break;
+                    }else if(ferror(file)){
+                        err = IO_ERROR;
+                        break;
+                    }
 
-                token = strtok(line, "\t");
+                    token = strtok(line, "\t");
 
-                for (j = 0; j < n_cols && token != NULL; j++) {
-                    mat[i][j] = atoi(token); //TODO for the time being, convert to strtol
-                    token = strtok(NULL,"\t");
-                }
-                if(token == NULL && j < n_cols){
-                    err = NOT_ENOUGH_NUMBERS;
+                    for (j = 0; j < n_cols && token != NULL; j++) {
+                        mat[i][j] = atoi(token); //TODO for the time being, convert to strtol
+                        token = strtok(NULL,"\t");
+                    }
+                    if(token == NULL && j < n_cols){
+                        err = NOT_ENOUGH_NUMBERS;
+                    }
                 }
             }
         }
